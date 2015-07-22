@@ -1,6 +1,8 @@
 (ns leiningen.rpm
   (:require [clojure.java.data :as data])
-  (:import [org.codehaus.mojo.rpm RPMMojo AbstractRPMMojo Mapping Source SoftlinkSource Scriptlet]
+  (:import [org.codehaus.mojo.rpm RPMMojo AbstractRPMMojo Mapping Source SoftlinkSource Scriptlet Passphrase]
+           [org.apache.maven.execution MavenSession]
+           [org.apache.maven.settings Settings]
            [org.apache.maven.project MavenProject]
            [org.apache.maven.shared.filtering DefaultMavenFileFilter]
            [org.codehaus.plexus.logging.console ConsoleLogger]))
@@ -53,6 +55,11 @@
 
   (let [mojo (createBaseMojo)]
     (set-mojo! mojo "projversion" version)
+    (set-mojo! mojo "versionProperty" version)
+    (set-mojo! mojo "releaseProperty" version)
+    (set-mojo! mojo "session" (MavenSession. nil (Settings.) nil nil nil nil
+                                             nil (java.util.Properties.) (java.util.Date.)))
+    (set-mojo! mojo "keyPassphrase" (doto (Passphrase.) (.setPassphrase "foo")))
     (set-mojo! mojo "name" name)
     (set-mojo! mojo "summary" summary)
     (set-mojo! mojo "license" license)
